@@ -1,0 +1,37 @@
+
+server:
+  port: 8888
+  servlet:
+    context-path: /mental-cove/api
+spring:
+  profiles:
+    active: local
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+api:
+  rate-limit:
+    max-requests: 4
+    duration: 60
+
+wechat:
+  appid: wxefcd075f4ebb8b70
+  app-secret: ${WECHAT_APP_SECRET}
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 2
+
+openai:
+  api:
+    key: ${OPENAI_API_KEY}
+    url: https://api.openai.com/v1
+
+gemini:
+  api:
+    key: ${GEMINI_API_KEY}
+    url: https://generativelanguage.googleapis.com/v1beta/models/
