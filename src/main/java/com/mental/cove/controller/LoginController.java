@@ -36,7 +36,6 @@ public class LoginController {
             userService.getOrCreateUser(openid);
             String token = jwtTokenProvider.createToken(openid, accessToken);
             return ResponseEntity.ok().body(token);
-
         } catch (Exception e) {
             log.error("Login failed for code:{}", code, e);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed to authenticate with WeChat");

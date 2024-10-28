@@ -42,6 +42,9 @@ public class JwtTokenAuthorizationManager implements AuthorizationManager<Reques
         HttpServletRequest request = object.getRequest();
         String token = request.getHeader("Authorization");
         token = StringUtils.substringAfter(token, AUTH_BEARER);
+        if(StringUtils.isBlank(token)) {
+            return new AuthorizationDecision(false);
+        }
         try {
             byte[] keyBytes = Decoders.BASE64.decode(secret);
             SecretKey key = Keys.hmacShaKeyFor(keyBytes);
@@ -61,12 +64,13 @@ public class JwtTokenAuthorizationManager implements AuthorizationManager<Reques
             }
         } catch (SignatureException ex) {
             log.error("Invalid JWT signature", ex);
-            throw new TokenValidationException("Invalid JWT signature");
+            return new AuthorizationDecision(false);
         } catch (ExpiredJwtException ex) {
-            throw new TokenValidationException("Token is expired");
+            log.error("JWT token is expired", ex);
+            return new AuthorizationDecision(false);
         } catch (Exception ex) {
             log.error("Invalid JWT token", ex);
-            throw new TokenValidationException("Invalid JWT token");
+            return new AuthorizationDecision(false);
         }
     }
 }

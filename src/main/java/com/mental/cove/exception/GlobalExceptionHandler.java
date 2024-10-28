@@ -1,6 +1,7 @@
 package com.mental.cove.exception;
 
 import com.mental.cove.common.HttpStatusCodes;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -12,4 +13,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleRateLimitExceeded(RateLimitExceededException ex) {
         return ResponseEntity.status(HttpStatusCodes.SC_TOO_MANY_REQUESTS).body(ex.getMessage());
     }
+    @ExceptionHandler(TokenValidationException.class)
+    public ResponseEntity<String> handleRateLimitExceeded(TokenValidationException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+    }
+
 }

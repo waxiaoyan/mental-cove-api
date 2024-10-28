@@ -1,6 +1,6 @@
 
 server:
-  port: 8888
+  port: 8000
   servlet:
     context-path: /mental-cove/api
 spring:
