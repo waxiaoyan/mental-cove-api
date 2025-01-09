@@ -3,7 +3,7 @@ package com.mental.cove.data;
 import lombok.Data;
 
 @Data
-public class Question {
+public class MBTIQuestion {
     private int id;
     private String question;
     private String a1;

@@ -5,6 +5,6 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class Questionnaire {
-    private List<Question> questions;
+public class MBTITypeExplanationList {
+    private List<MBTITypeExplanation> types;
 }

@@ -1,0 +1,68 @@
+{
+  "types": [
+    {
+      "type": "INTJ",
+      "personality": "战略家"
+    },
+    {
+      "type": "INTP",
+      "personality": "预言家"
+    },
+    {
+      "type": "ENTJ",
+      "personality": "霸总/元帅"
+    },
+    {
+      "type": "ENTP",
+      "personality": "辩论家"
+    },
+    {
+      "type": "INFJ",
+      "personality": "灵魂导师"
+    },
+    {
+      "type": "INFP",
+      "personality": "照顾者"
+    },
+    {
+      "type": "ENFJ",
+      "personality": "教育家"
+    },
+    {
+      "type": "ENFP",
+      "personality": "倡导者"
+    },
+    {
+      "type": "ISTJ",
+      "personality": "公务员"
+    },
+    {
+      "type": "ISFJ",
+      "personality": "照顾者"
+    },
+    {
+      "type": "ESTJ",
+      "personality": "总经理型"
+    },
+    {
+      "type": "ESFJ",
+      "personality": "执政官型"
+    },
+    {
+      "type": "ISTP",
+      "personality": "巧匠型"
+    },
+    {
+      "type": "ISFP",
+      "personality": "艺术家"
+    },
+    {
+      "type": "ESTP",
+      "personality": "行为艺术家"
+    },
+    {
+      "type": "ESFP",
+      "personality": "表演家"
+    }
+  ]
+}

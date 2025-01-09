@@ -10,8 +10,10 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users")
-public class User extends BaseEntity{
-    private String userName;
-    private String openId;
+@Table(name = "assessment_result")
+public class AssessmentResult extends BaseEntity{
+    private long userId;
+    private String assessmentType;
+    private String assessmentResult;
+    private String assessmentDesc;
 }

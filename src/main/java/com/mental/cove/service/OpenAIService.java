@@ -4,7 +4,7 @@ import com.mental.cove.auth.SecurityService;
 import com.mental.cove.constant.PromptConstant;
 import com.mental.cove.data.ChatGPTRequest;
 import com.mental.cove.data.ChatGPTResponse;
-import com.mental.cove.data.Message;
+import com.mental.cove.data.ChatGPTMessage;
 import com.mental.cove.entity.DreamInterpretation;
 import com.mental.cove.entity.User;
 import com.mental.cove.repository.DreamInterpretationRepository;
@@ -33,7 +33,7 @@ public class OpenAIService {
     private String openAIUrl;
 
     public String chat(String prompt) {
-        Message systemMessage = new Message("system", PromptConstant.DREAM_PROMPT );
+        ChatGPTMessage systemMessage = new ChatGPTMessage("system", PromptConstant.DREAM_PROMPT );
         ChatGPTRequest chatGPTRequest = new ChatGPTRequest(model, prompt);
         chatGPTRequest.getMessages().add(systemMessage);
         chatGPTRequest.setMax_tokens(200);
@@ -41,7 +41,7 @@ public class OpenAIService {
         assert chatGPTResponse != null;
         String content = chatGPTResponse.getChoices().get(0).getMessage().getContent();
         String openId = securityService.getCurrentUserOpenId();
-        User user = userRepository.findByName(openId);
+        User user = userRepository.findByOpenId(openId);
         DreamInterpretation dreamInterpretation = DreamInterpretation.builder()
                 .userId(user.getId())
                 .dreamContent(prompt)

@@ -14,10 +14,11 @@ public class UserService {
     private UserRepository userRepository;
 
     @Transactional
-    public User getOrCreateUser(String name) {
-        User user = userRepository.findByName(name);
+    public User getOrCreateUser(String openId) {
+        User user = userRepository.findByOpenId(openId);
         if (user == null) {
-            user = new User(name);
+            user = new User();
+            user.setOpenId(openId);
             userRepository.save(user);
         }
         return user;

@@ -48,8 +48,7 @@ dependencies {
 	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 	implementation 'com.google.code.gson:gson:2.8.9'
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
-	implementation 'com.github.binarywang:weixin-java-miniapp:4.6.0'
-	implementation 'com.github.binarywang:weixin-java-pay:4.6.0'
+	implementation 'org.postgresql:postgresql:42.7.2'
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
