@@ -36,3 +36,10 @@ gemini:
   api:
     key: ${GEMINI_API_KEY}
     url: https://generativelanguage.googleapis.com/v1beta/models/
+
+deepseek:
+  api:
+    key: ${DEEPSEEK_API_KEY}
+    url: https://api.deepseek.com/chat/completions
+
+dream_interpretation_limited_enable: ${DREAM_INTERPRETATION_LIMITED_ENABLE:true}

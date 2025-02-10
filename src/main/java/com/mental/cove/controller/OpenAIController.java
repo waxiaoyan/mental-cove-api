@@ -15,7 +15,7 @@ public class OpenAIController {
 
     @PostMapping(value = "/chat")
     @RateLimit(requests = 50, duration = 60)
-    public ResponseEntity<?> chat(@RequestBody String prompt) {
-        return ResponseEntity.ok(openAIService.chat(prompt));
+    public ResponseEntity<?> chat(@RequestBody String dreamContent) {
+        return ResponseEntity.ok(openAIService.chat(dreamContent));
     }
 }

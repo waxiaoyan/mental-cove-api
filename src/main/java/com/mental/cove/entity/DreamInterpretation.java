@@ -1,8 +1,6 @@
 package com.mental.cove.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 
@@ -14,7 +12,9 @@ import lombok.*;
 @AllArgsConstructor
 @Table(name = "dream_interpretation")
 public class DreamInterpretation extends BaseEntity {
-    private long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
     @Column(columnDefinition = "TEXT")
     private String dreamContent;
     @Column(columnDefinition = "TEXT")
