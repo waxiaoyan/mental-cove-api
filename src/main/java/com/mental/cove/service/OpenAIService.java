@@ -49,6 +49,7 @@ public class OpenAIService {
 
     private final RestTemplate openAIRestTemplate;
     private final RestTemplate deepSeekRestTemplate;
+    private GeminiService geminiService;
 
     public OpenAIService(@Qualifier("openAIRestTemplate") RestTemplate openAIRestTemplate,
                          @Qualifier("deepSeekRestTemplate") RestTemplate deepSeekRestTemplate) {
@@ -62,12 +63,15 @@ public class OpenAIService {
         if(enableDreamInterpretationLimited && totalInterpretations > 1) {
             throw new CustomBusinessException("You have reached the daily limit of dream interpretations");
         }
-        String content;
-        try{
-            content = openAIChat(dreamContent);
-        } catch (Exception e) {
-            log.error("OpenAI chat error: {0}", e);
-            content = deepSeekChat(dreamContent);
+        String content = tryOpenAIChat(dreamContent);
+        if (content == null) {
+            content = tryDeepSeekChat(dreamContent);
+        }
+        if (content == null) {
+            content = tryGeminiChat(dreamContent);
+        }
+        if (content == null) {
+            throw new CustomBusinessException("All chat services failed");
         }
         User user = userRepository.findByOpenId(openId);
         DreamInterpretation dreamInterpretation = DreamInterpretation.builder()
@@ -77,7 +81,33 @@ public class OpenAIService {
                 .ip(securityService.getCurrentRequestUserIp())
                 .build();
         dreamInterpretationRepository.save(dreamInterpretation);
-        return deepSeekChat(dreamContent);
+        return content;
+    }
+    private String tryOpenAIChat(String dreamContent) {
+        try {
+            return openAIChat(dreamContent);
+        } catch (Exception e) {
+            log.error("OpenAI chat error: {0}", e);
+            return null;
+        }
+    }
+
+    private String tryDeepSeekChat(String dreamContent) {
+        try {
+            return deepSeekChat(dreamContent);
+        } catch (Exception e) {
+            log.error("DeepSeek chat error: {0}", e);
+            return null;
+        }
+    }
+
+    private String tryGeminiChat(String dreamContent) {
+        try {
+            return geminiService.chat(dreamContent);
+        } catch (Exception e) {
+            log.error("Gemini chat error: {0}", e);
+            return null;
+        }
     }
 
     private String openAIChat(String dreamContent) {

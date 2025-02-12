@@ -71,9 +71,9 @@ public class QuestionnaireService {
                 //calculate each type's percentage
                 Map<String, Integer> percentage = new HashMap<>();
                 scores.forEach((key, value) -> percentage.put(key, value * 100 / questionsNode.size()));
-                saveMBTIType(mbtiType);
                 MBTITypeExplanation mbtiTypeExplanation = getMBTITypeExplanation(mbtiType);
                 mbtiTypeExplanation.setPercentages(calculatePercentages(scores, mbtiType));
+                saveMBTIType(mbtiTypeExplanation);
                 return mbtiTypeExplanation;
             } else {
                 throw new CustomBusinessException("No questions found in the questionnaire");
@@ -92,12 +92,12 @@ public class QuestionnaireService {
         return mbtiMap.get(mbtiType);
     }
 
-    private void saveMBTIType(String mbtiType) {
+    private void saveMBTIType(MBTITypeExplanation result) {
         String openId = securityService.getCurrentUserOpenId();
         User user = userRepository.findByOpenId(openId);
         AssessmentResult mbtiResult = AssessmentResult.builder()
                 .userId(user.getId())
-                .assessmentResult(mbtiType)
+                .assessmentResult(result)
                 .assessmentType(AssessmentTypeEnum.MBTI.getValue())
                 .assessmentDesc(AssessmentTypeEnum.MBTI.getName())
                 .build();

@@ -8,7 +8,7 @@ import lombok.Data;
 public class AssessmentResultData {
     private String userId;
     private String assessmentType;
-    private String assessmentResult;
+    private Object assessmentResult;
     private String assessmentDesc;
     private String assessmentTime;
 }
