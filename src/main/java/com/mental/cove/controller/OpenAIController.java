@@ -18,4 +18,9 @@ public class OpenAIController {
     public ResponseEntity<?> chat(@RequestBody String dreamContent) {
         return ResponseEntity.ok(openAIService.chat(dreamContent));
     }
+
+    @GetMapping(value = "/interpretation-count")
+    public ResponseEntity<?> interpretationCount() {
+        return ResponseEntity.ok(openAIService.getInterpretationCount());
+    }
 }

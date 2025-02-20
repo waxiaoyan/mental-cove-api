@@ -12,16 +12,12 @@ import com.mental.cove.repository.DreamInterpretationRepository;
 import com.mental.cove.repository.UserRepository;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +45,8 @@ public class OpenAIService {
 
     private final RestTemplate openAIRestTemplate;
     private final RestTemplate deepSeekRestTemplate;
+
+    @Resource
     private GeminiService geminiService;
 
     public OpenAIService(@Qualifier("openAIRestTemplate") RestTemplate openAIRestTemplate,
@@ -57,15 +55,24 @@ public class OpenAIService {
         this.deepSeekRestTemplate = deepSeekRestTemplate;
     }
 
+    public int getInterpretationCount() {
+        String openId = securityService.getCurrentUserOpenId();
+        return dreamInterpretationRepository.countByUserOpenIdAndCreatedTimeToday(openId);
+    }
+
     public String chat(String dreamContent) {
         String openId = securityService.getCurrentUserOpenId();
+        User user = userRepository.findByOpenId(openId);
         int totalInterpretations = dreamInterpretationRepository.countByUserOpenIdAndCreatedTimeToday(openId);
         if(enableDreamInterpretationLimited && totalInterpretations > 1) {
+//            List<DreamInterpretation> results = dreamInterpretationRepository.findLatestByUserAndToday(user);
+//            DreamInterpretation dreamInterpretation = results.isEmpty() ? null : results.get(0);
+//            return dreamInterpretation.getInterpretation();
             throw new CustomBusinessException("You have reached the daily limit of dream interpretations");
         }
-        String content = tryOpenAIChat(dreamContent);
+        String content = tryDeepSeekChat(dreamContent);
         if (content == null) {
-            content = tryDeepSeekChat(dreamContent);
+            content = tryOpenAIChat(dreamContent);
         }
         if (content == null) {
             content = tryGeminiChat(dreamContent);
@@ -73,7 +80,6 @@ public class OpenAIService {
         if (content == null) {
             throw new CustomBusinessException("All chat services failed");
         }
-        User user = userRepository.findByOpenId(openId);
         DreamInterpretation dreamInterpretation = DreamInterpretation.builder()
                 .user(user)
                 .dreamContent(dreamContent)
@@ -121,37 +127,21 @@ public class OpenAIService {
     }
 
     public String deepSeekChat(String dreamConent) {
-        Map<String, Object> requestBodyMap = new HashMap<>();
-        requestBodyMap.put("model", "deepseek-chat");
-        requestBodyMap.put("frequency_penalty", 0);
-        requestBodyMap.put("max_tokens", 2048);
-        requestBodyMap.put("presence_penalty", 0);
-        requestBodyMap.put("response_format", Map.of("type", "text"));
-        requestBodyMap.put("stop", null);
-        requestBodyMap.put("stream", false);
-        requestBodyMap.put("temperature", 1);
-        requestBodyMap.put("top_p", 1);
-        requestBodyMap.put("tools", null);
-        requestBodyMap.put("tool_choice", "none");
-        requestBodyMap.put("logprobs", false);
-        requestBodyMap.put("top_logprobs", null);
-
-        List<Map<String, String>> messages = new ArrayList<>();
-        Map<String, String> systemMessageMap = new HashMap<>();
-        systemMessageMap.put("content", PromptConstant.DREAM_PROMPT);
-        systemMessageMap.put("role", "system");
-
+        Map<String, String> systemMessage = new HashMap<>();
+        systemMessage.put("role", "system");
+        systemMessage.put("content", PromptConstant.DREAM_PROMPT);
         Map<String, String> userMessageMap = new HashMap<>();
-        userMessageMap.put("content", dreamConent);
         userMessageMap.put("role", "user");
-        messages.add(systemMessageMap);
-        messages.add(userMessageMap);
-        requestBodyMap.put("messages", messages);
-        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBodyMap);
+        userMessageMap.put("content", dreamConent);
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("model", "deepseek-chat");
+        requestBody.put("messages", Arrays.asList(systemMessage, userMessageMap));
+        requestBody.put("stream", false);
+
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody);
         try{
-            ChatGPTResponse chatGPTResponse = deepSeekRestTemplate.postForObject(deepSeekUrl + "/chat/completions", requestEntity, ChatGPTResponse.class);
-            assert chatGPTResponse != null;
-            return chatGPTResponse.getChoices().get(0).getMessage().getContent();
+            ChatGPTResponse responseEntity = deepSeekRestTemplate.postForObject(deepSeekUrl + "/chat/completions", requestEntity, ChatGPTResponse.class);
+            return responseEntity.getChoices().get(0).getMessage().getContent();
         } catch (Exception e) {
             log.error("DeepSeek chat error: {0}", e);
             throw new CustomBusinessException("DeepSeek chat error");
