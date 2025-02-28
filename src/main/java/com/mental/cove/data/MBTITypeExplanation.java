@@ -2,18 +2,22 @@ package com.mental.cove.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
-public class MBTITypeExplanation {
-    private String type;
+public class MBTITypeExplanation extends ResultExplanation{
+    private String mbtiType;
     private String personality;
     private List<Percentage> percentages;
-    //add a inner class which include label percentage and secondLabel
     @Data
     @AllArgsConstructor
-    public static class Percentage {
+    @NoArgsConstructor
+    public static class Percentage implements Serializable {
         private String label;
         private Integer percentage;
         private String secondLabel;

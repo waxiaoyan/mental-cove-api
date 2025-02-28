@@ -1,67 +1,67 @@
 {
   "types": [
     {
-      "type": "INTJ",
+      "mbtiType": "INTJ",
       "personality": "战略家"
     },
     {
-      "type": "INTP",
+      "mbtiType": "INTP",
       "personality": "预言家"
     },
     {
-      "type": "ENTJ",
+      "mbtiType": "ENTJ",
       "personality": "霸总/元帅"
     },
     {
-      "type": "ENTP",
+      "mbtiType": "ENTP",
       "personality": "辩论家"
     },
     {
-      "type": "INFJ",
+      "mbtiType": "INFJ",
       "personality": "灵魂导师"
     },
     {
-      "type": "INFP",
+      "mbtiType": "INFP",
       "personality": "照顾者"
     },
     {
-      "type": "ENFJ",
+      "mbtiType": "ENFJ",
       "personality": "教育家"
     },
     {
-      "type": "ENFP",
+      "mbtiType": "ENFP",
       "personality": "倡导者"
     },
     {
-      "type": "ISTJ",
+      "mbtiType": "ISTJ",
       "personality": "公务员"
     },
     {
-      "type": "ISFJ",
+      "mbtiType": "ISFJ",
       "personality": "照顾者"
     },
     {
-      "type": "ESTJ",
+      "mbtiType": "ESTJ",
       "personality": "总经理型"
     },
     {
-      "type": "ESFJ",
+      "mbtiType": "ESFJ",
       "personality": "执政官型"
     },
     {
-      "type": "ISTP",
+      "mbtiType": "ISTP",
       "personality": "巧匠型"
     },
     {
-      "type": "ISFP",
+      "mbtiType": "ISFP",
       "personality": "艺术家"
     },
     {
-      "type": "ESTP",
+      "mbtiType": "ESTP",
       "personality": "行为艺术家"
     },
     {
-      "type": "ESFP",
+      "mbtiType": "ESFP",
       "personality": "表演家"
     }
   ]

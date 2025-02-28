@@ -31,4 +31,10 @@ public class QuestionnaireController {
     public ResponseEntity<Object> getAssessmentResults(@RequestParam String userId) {
         return ResponseEntity.ok(questionnaireService.getAssessmentResults(Long.valueOf(userId)));
     }
+
+    @PostMapping("/submit-sds")
+    public ResponseEntity<Object> submitSDS(@RequestBody Map<String, String> sdsAnswers) throws IOException {
+        return ResponseEntity.ok(questionnaireService.calculateSDSResult(sdsAnswers));
+    }
+
 }

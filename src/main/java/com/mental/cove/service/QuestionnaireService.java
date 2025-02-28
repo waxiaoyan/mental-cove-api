@@ -3,10 +3,7 @@ package com.mental.cove.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mental.cove.auth.SecurityService;
-import com.mental.cove.data.AssessmentResultData;
-import com.mental.cove.data.MBTIQuestionnaire;
-import com.mental.cove.data.MBTITypeExplanation;
-import com.mental.cove.data.MBTITypeExplanationList;
+import com.mental.cove.data.*;
 import com.mental.cove.entity.AssessmentResult;
 import com.mental.cove.entity.User;
 import com.mental.cove.enums.AssessmentTypeEnum;
@@ -72,6 +69,7 @@ public class QuestionnaireService {
                 Map<String, Integer> percentage = new HashMap<>();
                 scores.forEach((key, value) -> percentage.put(key, value * 100 / questionsNode.size()));
                 MBTITypeExplanation mbtiTypeExplanation = getMBTITypeExplanation(mbtiType);
+                mbtiTypeExplanation.setType("MBTI");
                 mbtiTypeExplanation.setPercentages(calculatePercentages(scores, mbtiType));
                 saveMBTIType(mbtiTypeExplanation);
                 return mbtiTypeExplanation;
@@ -84,11 +82,67 @@ public class QuestionnaireService {
         }
     }
 
+    @Transactional
+    public SdsResultResponse calculateSDSResult(Map<String, String> sdsAnswers) {
+        log.info("Calculating SDS result:{}.", sdsAnswers);
+        int score = 0;
+        for (Map.Entry<String, String> entry : sdsAnswers.entrySet()) {
+            score += Integer.parseInt(entry.getValue());
+        }
+        int totalScore = (int)Math.round(score * 1.25);
+        String result = "正常";
+        String explanation = "";
+        String suggestion = "";
+        //totalScore in 25-49  正常，totalScore is 50-59轻度抑郁，totalScore is 60-69，totalScore＞70重度抑郁
+        if (totalScore >= 25 && totalScore <= 49) {
+            result = "正常";
+            explanation = "您的心理状态在正常范围内，当前没有明显的抑郁症状。";
+            suggestion = "继续保持健康的生活方式，注意情绪调节，定期进行心理状态自测。";
+        } else if (totalScore >= 50 && totalScore <= 59) {
+            result = "轻度抑郁";
+            explanation = "您表现出一定程度的抑郁情绪，可能与近期压力、生活事件有关。";
+            suggestion = "建议进行自我调节，通过运动、社交活动改善情绪，如持续2周以上建议寻求专业帮助。";
+        } else if (totalScore >= 60 && totalScore <= 69) {
+            result = "中度抑郁";
+            explanation = "您表现出明显的抑郁症状，已经对生活产生一定影响。";
+            suggestion = "建议尽快预约心理咨询师或精神科医生进行专业评估，及时进行心理干预。";
+        } else if(totalScore >= 70) {
+            result = "重度抑郁";
+            explanation = "您的抑郁症状较为严重，需要立即采取干预措施。";
+            suggestion = "请立即联系精神心理科医生或拨打心理援助热线，务必寻求专业帮助。";
+        }
+        saveSDSResult(score, result, explanation, suggestion);
+        return SdsResultResponse.builder()
+                .result(result)
+                .score(score)
+                .explanation(explanation)
+                .suggestion(suggestion)
+                .build();
+    }
+
+    private void saveSDSResult(int score, String result, String explanation, String suggestion) {
+        String openId = securityService.getCurrentUserOpenId();
+        User user = userRepository.findByOpenId(openId);
+        SdsResultExplanation sdsResult = SdsResultExplanation.builder()
+                .result(result)
+                .explanation(explanation)
+                .suggestion(suggestion)
+                .score(score).build();
+        sdsResult.setType("SDS");
+        AssessmentResult mbtiResult = AssessmentResult.builder()
+                .userId(user.getId())
+                .assessmentResult(sdsResult)
+                .assessmentType(AssessmentTypeEnum.SDS.getValue())
+                .assessmentDesc(AssessmentTypeEnum.SDS.getName())
+                .build();
+        mbtiResultRepository.save(mbtiResult);
+    }
+
     private MBTITypeExplanation getMBTITypeExplanation(String mbtiType) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         ClassPathResource resource = new ClassPathResource("questionnaire/mbti_type/mbti_personality_desc.json");
         MBTITypeExplanationList typeList = mapper.readValue(resource.getInputStream(), MBTITypeExplanationList.class);
-        Map<String, MBTITypeExplanation> mbtiMap = typeList.getTypes().stream().collect(Collectors.toMap(MBTITypeExplanation::getType, type -> type));
+        Map<String, MBTITypeExplanation> mbtiMap = typeList.getTypes().stream().collect(Collectors.toMap(MBTITypeExplanation::getMbtiType, type -> type));
         return mbtiMap.get(mbtiType);
     }
 
@@ -146,16 +200,18 @@ public class QuestionnaireService {
     }
 
     public List<AssessmentResultData> getAssessmentResults(long userId) {
-        AssessmentResult mbtiResult = mbtiResultRepository.findFirstByUserIdOrderByCreatedTimeDesc(userId);
-        if (mbtiResult == null) {
+        List<AssessmentResult> latestAssessments = mbtiResultRepository.findLatestAssessmentsByUserId(userId);
+        if (latestAssessments == null) {
             return Collections.emptyList();
         }
-        return Collections.singletonList(AssessmentResultData.builder()
+        //convert to AssessmentResultData
+        return latestAssessments.stream().map(assessmentResult -> AssessmentResultData.builder()
                 .userId(String.valueOf(userId))
-                .assessmentResult(mbtiResult.getAssessmentResult())
-                .assessmentDesc(mbtiResult.getAssessmentDesc())
-                .assessmentType(AssessmentTypeEnum.MBTI.getValue())
-                .assessmentTime(DateUtils.formatLocalDateTime(mbtiResult.getCreatedTime()))
-                .build());
+                .assessmentResult(assessmentResult.getAssessmentResult())
+                .assessmentDesc(assessmentResult.getAssessmentDesc())
+                .assessmentType(assessmentResult.getAssessmentType())
+                .assessmentTime(DateUtils.formatLocalDateTime(assessmentResult.getCreatedTime()))
+                .build()).collect(Collectors.toList());
+
     }
 }
