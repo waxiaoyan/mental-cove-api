@@ -16,9 +16,9 @@ import java.io.IOException;
 @Slf4j
 public class GeminiService {
 
-    @Value("${gemini.api.key}")
+//    @Value("${gemini.api.key}")
     private String apiKey;
-    @Value("${gemini.api.url}")
+//    @Value("${gemini.api.url}")
     private String url;
 
     private static final String GEMINI_MODEL = "gemini-1.5-flash";

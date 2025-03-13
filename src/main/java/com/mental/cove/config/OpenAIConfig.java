@@ -12,22 +12,22 @@ import java.util.Collections;
 @Configuration
 public class OpenAIConfig {
 
-    @Value("${openai.api.key}")
-    private String openaiApiKey;
+//    @Value("${openai.api.key}")
+//    private String openaiApiKey;
 
     @Value("${deepseek.api.key}")
     private String deepseekApiKey;
 
-    @Bean
-    @Primary
-    public RestTemplate openAIRestTemplate() {
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getInterceptors().add(((request, body, execution) -> {
-            request.getHeaders().add("Authorization", "Bearer " + openaiApiKey);
-            return execution.execute(request, body);
-        }));
-        return restTemplate;
-    }
+//    @Bean
+//    @Primary
+//    public RestTemplate openAIRestTemplate() {
+//        RestTemplate restTemplate = new RestTemplate();
+//        restTemplate.getInterceptors().add(((request, body, execution) -> {
+//            request.getHeaders().add("Authorization", "Bearer " + openaiApiKey);
+//            return execution.execute(request, body);
+//        }));
+//        return restTemplate;
+//    }
 
     @Bean
     public RestTemplate deepSeekRestTemplate() {

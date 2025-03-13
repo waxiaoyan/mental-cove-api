@@ -34,7 +34,7 @@ public class OpenAIService {
 
     private final String model = "gpt-4o";
 
-    @Value("${openai.api.url}")
+//    @Value("${openai.api.url}")
     private String openAIUrl;
 
     @Value("${deepseek.api.url}")
@@ -43,15 +43,19 @@ public class OpenAIService {
     @Value("${dream_interpretation_limited_enable}")
     private boolean enableDreamInterpretationLimited;
 
-    private final RestTemplate openAIRestTemplate;
+//    private final RestTemplate openAIRestTemplate;
     private final RestTemplate deepSeekRestTemplate;
 
     @Resource
     private GeminiService geminiService;
 
-    public OpenAIService(@Qualifier("openAIRestTemplate") RestTemplate openAIRestTemplate,
-                         @Qualifier("deepSeekRestTemplate") RestTemplate deepSeekRestTemplate) {
-        this.openAIRestTemplate = openAIRestTemplate;
+//    public OpenAIService(@Qualifier("openAIRestTemplate") RestTemplate openAIRestTemplate,
+//                         @Qualifier("deepSeekRestTemplate") RestTemplate deepSeekRestTemplate) {
+//        this.openAIRestTemplate = openAIRestTemplate;
+//        this.deepSeekRestTemplate = deepSeekRestTemplate;
+//    }
+
+    public OpenAIService(@Qualifier("deepSeekRestTemplate") RestTemplate deepSeekRestTemplate) {
         this.deepSeekRestTemplate = deepSeekRestTemplate;
     }
 
@@ -71,12 +75,12 @@ public class OpenAIService {
             throw new CustomBusinessException("You have reached the daily limit of dream interpretations");
         }
         String content = tryDeepSeekChat(dreamContent);
-        if (content == null) {
-            content = tryOpenAIChat(dreamContent);
-        }
-        if (content == null) {
-            content = tryGeminiChat(dreamContent);
-        }
+//        if (content == null) {
+//            content = tryOpenAIChat(dreamContent);
+//        }
+//        if (content == null) {
+//            content = tryGeminiChat(dreamContent);
+//        }
         if (content == null) {
             throw new CustomBusinessException("All chat services failed");
         }
@@ -89,14 +93,14 @@ public class OpenAIService {
         dreamInterpretationRepository.save(dreamInterpretation);
         return content;
     }
-    private String tryOpenAIChat(String dreamContent) {
-        try {
-            return openAIChat(dreamContent);
-        } catch (Exception e) {
-            log.error("OpenAI chat error: {0}", e);
-            return null;
-        }
-    }
+//    private String tryOpenAIChat(String dreamContent) {
+//        try {
+//            return openAIChat(dreamContent);
+//        } catch (Exception e) {
+//            log.error("OpenAI chat error: {0}", e);
+//            return null;
+//        }
+//    }
 
     private String tryDeepSeekChat(String dreamContent) {
         try {
@@ -116,15 +120,15 @@ public class OpenAIService {
         }
     }
 
-    private String openAIChat(String dreamContent) {
-        ChatGPTMessage systemMessage = new ChatGPTMessage("system", PromptConstant.DREAM_PROMPT );
-        ChatGPTRequest chatGPTRequest = new ChatGPTRequest(model, dreamContent);
-        chatGPTRequest.getMessages().add(systemMessage);
-        chatGPTRequest.setMax_tokens(1000);
-        ChatGPTResponse chatGPTResponse = openAIRestTemplate.postForObject(openAIUrl + "/chat/completions", chatGPTRequest, ChatGPTResponse.class);
-        assert chatGPTResponse != null;
-        return chatGPTResponse.getChoices().get(0).getMessage().getContent();
-    }
+//    private String openAIChat(String dreamContent) {
+//        ChatGPTMessage systemMessage = new ChatGPTMessage("system", PromptConstant.DREAM_PROMPT );
+//        ChatGPTRequest chatGPTRequest = new ChatGPTRequest(model, dreamContent);
+//        chatGPTRequest.getMessages().add(systemMessage);
+//        chatGPTRequest.setMax_tokens(1000);
+//        ChatGPTResponse chatGPTResponse = openAIRestTemplate.postForObject(openAIUrl + "/chat/completions", chatGPTRequest, ChatGPTResponse.class);
+//        assert chatGPTResponse != null;
+//        return chatGPTResponse.getChoices().get(0).getMessage().getContent();
+//    }
 
     public String deepSeekChat(String dreamConent) {
         Map<String, String> systemMessage = new HashMap<>();

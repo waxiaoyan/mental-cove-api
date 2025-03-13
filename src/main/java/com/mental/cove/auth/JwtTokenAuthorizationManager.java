@@ -1,7 +1,6 @@
 package com.mental.cove.auth;
 
 
-import com.mental.cove.exception.TokenValidationException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;

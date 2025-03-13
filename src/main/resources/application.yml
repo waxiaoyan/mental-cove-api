@@ -1,6 +1,5 @@
-
 server:
-  port: 8000
+  port: 8080
   servlet:
     context-path: /mental-cove/api
 spring:
@@ -16,7 +15,7 @@ spring:
 
 api:
   rate-limit:
-    max-requests: 4
+    max-requests: 10
     duration: 60
 
 wechat:
@@ -26,16 +25,16 @@ wechat:
 jwt:
   secret: ${JWT_SECRET}
   expiration: 2
-
-openai:
-  api:
-    key: ${OPENAI_API_KEY}
-    url: https://api.openai.com/v1
-
-gemini:
-  api:
-    key: ${GEMINI_API_KEY}
-    url: https://generativelanguage.googleapis.com/v1beta/models/
+#
+#openai:
+#  api:
+#    key: ${OPENAI_API_KEY}
+#    url: https://api.openai.com/v1
+#
+#gemini:
+#  api:
+#    key: ${GEMINI_API_KEY}
+#    url: https://generativelanguage.googleapis.com/v1beta/models/
 
 deepseek:
   api:
@@ -43,3 +42,9 @@ deepseek:
     url: https://api.deepseek.com/chat/completions
 
 dream_interpretation_limited_enable: ${DREAM_INTERPRETATION_LIMITED_ENABLE:true}
+
+flyway:
+  enabled: true
+  baseline-on-migrate: true
+  baseline-version: 1
+
