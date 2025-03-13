@@ -20,10 +20,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/health","/login","/public").permitAll()
+                        .requestMatchers("/health","/login","/public","/actuator/**").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().access(jwtTokenAuthentication)
                 )
+
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable);
